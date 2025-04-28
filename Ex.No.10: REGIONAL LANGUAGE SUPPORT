@@ -1,0 +1,271 @@
+Ex.No.10: REGIONAL LANGUAGE SUPPORT 
+
+activity_main.xml: 
+
+<?xml version="1.0" encoding="utf-8"?> 
+<androidx.constraintlayout.widget.ConstraintLayout 
+xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:app="http://schemas.android.com/apk/res-auto" 
+    xmlns:tools="http://schemas.android.com/tools" 
+    android:layout_width="match_parent" 
+    android:layout_height="match_parent" 
+    tools:context=".MainActivity"> 
+ 
+    <LinearLayout 
+        android:id="@+id/linearLayout" 
+        android:layout_width="0dp" 
+        android:layout_height="0dp" 
+        android:orientation="vertical" 
+        app:layout_constraintBottom_toBottomOf="parent" 
+        app:layout_constraintEnd_toEndOf="parent" 
+        app:layout_constraintStart_toStartOf="parent" 
+        app:layout_constraintTop_toTopOf="parent"> 
+ 
+        <TextView 
+            android:id="@+id/textView" 
+            android:layout_width="match_parent" 
+            android:layout_height="wrap_content" 
+            android:text="@string/regionallanguage" /> 
+ 
+        <TextView 
+            android:id="@+id/textView2" 
+            android:layout_width="match_parent" 
+            android:layout_height="wrap_content" 
+            android:text="@string/username" /> 
+ 
+        <EditText 
+            android:id="@+id/editTextTextPersonName" 
+            android:layout_width="match_parent" 
+            android:layout_height="wrap_content" 
+            android:ems="10" 
+            android:textSize="20dp" 
+            android:hint="@string/hint1" 
+            android:inputType="textPersonName" /> 
+ 
+        <TextView 
+            android:id="@+id/textView3" 
+            android:layout_width="match_parent" 
+            android:layout_height="wrap_content" 
+            android:text="@string/password" /> 
+ 
+        <EditText 
+            android:id="@+id/editTextTextPersonName2" 
+            android:layout_width="match_parent" 
+            android:layout_height="wrap_content" 
+            android:ems="10" 
+            android:textSize="20dp" 
+            android:hint="@string/hint1" 
+            android:inputType="textPersonName" /> 
+ 
+        <Button 
+            android:id="@+id/button" 
+            android:layout_width="match_parent" 
+            android:layout_height="wrap_content" 
+            android:text="@string/login" /> 
+ 
+        <Button 
+            android:id="@+id/button2" 
+            android:layout_width="match_parent" 
+            android:layout_height="wrap_content" 
+            android:text="@string/changelanguage" /> 
+ 
+    </LinearLayout> 
+ 
+ 
+</androidx.constraintlayout.widget.ConstraintLayout> 
+
+
+MainActivity.java: 
+
+package com.example.ex10; 
+import androidx.appcompat.app.AppCompatActivity; 
+ 
+import androidx.appcompat.app.AlertDialog; 
+ 
+import android.app.Activity; 
+ 
+import android.content.DialogInterface; 
+import android.content.SharedPreferences; 
+import android.content.res.Configuration; 
+import android.os.Bundle; 
+import android.view.View; 
+import android.widget.Button; 
+ 
+import java.util.Locale; 
+ 
+public class MainActivity extends AppCompatActivity { 
+    Button b2; 
+    @Override 
+    protected void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.activity_main); 
+        b2 = findViewById(R.id.button2); 
+ 
+        loadLocale(); // Load saved language 
+ 
+        b2.setOnClickListener(new View.OnClickListener() { 
+            @Override 
+            public void onClick(View v) { 
+                showChangeLanguage(); 
+            } 
+        }); 
+    } 
+    private void showChangeLanguage() { 
+        final String[] listItems = {"English", "Arabic", "Tamil", "Telugu"}; 
+ 
+        AlertDialog.Builder m = new AlertDialog.Builder(MainActivity.this); 
+        m.setTitle("Choose Your Language"); 
+ 
+        m.setSingleChoiceItems(listItems, -1, new DialogInterface.OnClickListener() { 
+            @Override 
+            public void onClick(DialogInterface dialog, int i) { 
+                String selectedLanguage; 
+                if (i == 0) { 
+                    selectedLanguage = "en"; // English 
+                } else if (i == 1) { 
+                    selectedLanguage = "ar"; // Arabic 
+                } else if (i == 2) { 
+                    selectedLanguage = "ta"; // Tamil 
+                } else if (i == 3) { 
+                    selectedLanguage = "te"; // Telugu 
+                } else { 
+ 
+                    return; 
+                } 
+ 
+                setLocale(selectedLanguage); 
+ 
+                recreate(); 
+                dialog.dismiss(); 
+            } 
+        }); 
+ 
+        AlertDialog mDialog = m.create(); 
+        mDialog.show(); 
+    } 
+ 
+ 
+    private void setLocale(String lang) { 
+        Locale locale = new Locale(lang); 
+        Locale.setDefault(locale); 
+ 
+        Configuration config = new Configuration(); 
+        config.locale = locale; 
+ 
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics()); 
+ 
+        SharedPreferences.Editor editor = getSharedPreferences("settings", 
+MODE_PRIVATE).edit(); 
+        editor.putString("My Language", lang); 
+        editor.apply(); 
+ 
+ 
+    } 
+ 
+    private void loadLocale() { 
+        SharedPreferences preferences = getSharedPreferences("settings", 
+Activity.MODE_PRIVATE); 
+        String lang = preferences.getString("My Language", ""); 
+        setLocale(lang); 
+    } 
+ 
+} 
+values\strings.xml: 
+<?xml version="1.0" encoding="utf-8"?> 
+<resources> 
+ 
+    <string name="app_name">ex10</string> 
+    <string name="regionallanguage">Regional Language</string> 
+ 
+    <string name="username">User Name</string> 
+ 
+    <string  name="password">Password</string> 
+ 
+    <string name="login"> Login </string> 
+    <string name="changelanguage">Change Language</string> 
+    <string  name="hint1">Enter your name</string> 
+    <string  name="hint2">Enter your password</string> 
+</resources> 
+ 
+values-ta\strings.xml: 
+<?xml version="1.0" encoding="utf-8"?> 
+<resources> 
+    <string name="app_name">ex10</string> 
+    <string name="regionallanguage">பிராந்திய ம ாழி</string> 
+    <string name="username">பயனர் மபயர்</string> 
+    <string name="password">கடவுச்மசால்</string> 
+    <string name="login">உள்நுழைய</string> 
+    <string name="changelanguage">ம ாழி  ாற்ற ்</string> 
+    <string name="hint1">உங்கள் மபயழர உள்ளிடவு ்</string> 
+    <string name="hint2">உங்கள் கடவுச்மசால்ழல உள்ளிடவு ்</string> 
+</resources> 
+ 
+values-te\strings.xml: 
+<?xml version="1.0" encoding="utf-8"?> 
+<resources> 
+    <string name="app_name">ex10</string> 
+    <string name="regionallanguage">ప్రాంతీయ భాష</string> 
+    <string name="username">వినియోగదారు పేరు</string> 
+    <string name="password">రస్ర్డ</string> 
+ 
+    <string name="login">ప్రవేశాంచాండి</string> 
+ 
+    <string name="changelanguage">భాష మారుు </string> 
+    <string name="hint1">మీ పేరు రాయుము</string> 
+    <string name="hint2">మీ రస్ర్డ ని నమోదుచేయాండి</string> 
+ 
+</resources> 
+ 
+values-ar\strings.xml: 
+<?xml version="1.0" encoding="utf-8"?> 
+<resources> 
+    <string name="app_name">ex10</string> 
+    <string name="regionallanguage">ةغ ل ةي لحم</string> 
+    <string name="username">مسا مدخت سملا</string> 
+    <string name="password">ةمل ك رورملا</string> 
+    <string name="login">لي جس ت لوخد لا</string> 
+    <string name="changelanguage">ري ي غ ت ةغل لا</string> 
+    <string name="hint1">لخدأ كمسأ</string> 
+    <string name="hint2">لخدا كمقر يرس لا</string> 
+</resources> 
+
+
+AndroidManifest.xml: 
+
+<?xml version="1.0" encoding="utf-8"?> 
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:tools="http://schemas.android.com/tools"> 
+ 
+    <application 
+        android:allowBackup="true" 
+        android:dataExtractionRules="@xml/data_extraction_rules" 
+        android:fullBackupContent="@xml/backup_rules" 
+        android:icon="@mipmap/ic_launcher" 
+        android:label="@string/app_name" 
+        android:roundIcon="@mipmap/ic_launcher_round" 
+        android:supportsRtl="true" 
+        android:theme="@style/Theme.Ex10" 
+        tools:targetApi="31"> 
+ 
+        <activity 
+            android:name=".MainActivity" 
+            android:exported="true"> 
+            <intent-filter> 
+                <action android:name="android.intent.action.MAIN" /> 
+                <category android:name="android.intent.category.LAUNCHER" /> 
+            </intent-filter> 
+        </activity> 
+    </application> 
+ 
+</manifest> 
+ 
+OUTPUT: 
+ 
+                             
+ 
+ 
+ 
+                               
+ 
+ 
+ 
