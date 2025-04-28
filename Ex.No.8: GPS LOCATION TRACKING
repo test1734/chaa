@@ -1,0 +1,234 @@
+Ex.No.8: GPS LOCATION TRACKING 
+
+activity_main.xml 
+
+<?xml version="1.0" encoding="utf-8"?> 
+<androidx.constraintlayout.widget.ConstraintLayout 
+xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:app="http://schemas.android.com/apk/res-auto" 
+    xmlns:tools="http://schemas.android.com/tools" 
+    android:layout_width="match_parent" 
+    android:layout_height="match_parent" 
+    tools:context=".MainActivity"> 
+ 
+    <TextView 
+        android:id="@+id/tv" 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_marginTop="104dp" 
+        android:text="GPS" 
+        android:textSize="18sp" 
+        app:layout_constraintEnd_toEndOf="parent" 
+        app:layout_constraintHorizontal_bias="0.498" 
+        app:layout_constraintStart_toStartOf="parent" 
+        app:layout_constraintTop_toTopOf="parent" /> 
+ 
+    <TextView 
+        android:id="@+id/l1" 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:text="Latitude" 
+        android:textSize="16sp" 
+        app:layout_constraintTop_toBottomOf="@+id/tv" 
+        app:layout_constraintStart_toStartOf="parent" 
+        android:layout_marginStart="41dp" 
+        android:layout_marginTop="30dp" /> 
+ 
+    <TextView 
+        android:id="@+id/l2" 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_marginTop="108dp" 
+        android:text="Longitude" 
+        android:textSize="16sp" 
+        app:layout_constraintEnd_toEndOf="parent" 
+        app:layout_constraintHorizontal_bias="0.12" 
+        app:layout_constraintStart_toStartOf="parent" 
+        app:layout_constraintTop_toBottomOf="@+id/l1" /> 
+ 
+    <EditText 
+        android:id="@+id/e1" 
+        android:layout_width="360dp" 
+        android:layout_height="47dp" 
+        android:layout_marginStart="20dp" 
+        android:layout_marginTop="216dp" 
+        android:ems="10" 
+        android:inputType="textPersonName" 
+        app:layout_constraintEnd_toEndOf="parent" 
+        app:layout_constraintHorizontal_bias="0.0" 
+        app:layout_constraintStart_toStartOf="parent" 
+        app:layout_constraintTop_toTopOf="parent" /> 
+ 
+    <EditText 
+        android:id="@+id/e2" 
+        android:layout_width="381dp" 
+        android:layout_height="42dp" 
+        android:layout_marginTop="96dp" 
+        android:ems="10" 
+        android:inputType="textPersonName" 
+        app:layout_constraintEnd_toEndOf="parent" 
+        app:layout_constraintHorizontal_bias="0.666" 
+        app:layout_constraintStart_toStartOf="parent" 
+        app:layout_constraintTop_toBottomOf="@+id/e1" /> 
+ 
+    <Button 
+        android:id="@+id/b1" 
+        android:layout_width="130dp" 
+        android:layout_height="wrap_content" 
+        android:text="Locate" 
+        app:layout_constraintTop_toBottomOf="@+id/e2" 
+        app:layout_constraintStart_toStartOf="parent" 
+        app:layout_constraintEnd_toEndOf="parent" 
+        android:layout_marginTop="30dp" /> 
+ 
+</androidx.constraintlayout.widget.ConstraintLayout> 
+ 
+
+activity_main2.xml : 
+
+<?xml version="1.0" encoding="utf-8"?> 
+<androidx.constraintlayout.widget.ConstraintLayout 
+xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:app="http://schemas.android.com/apk/res-auto" 
+    xmlns:tools="http://schemas.android.com/tools" 
+    android:layout_width="match_parent" 
+    android:layout_height="match_parent" 
+    tools:context=".MainActivity2"> 
+ 
+    <WebView 
+        android:id="@+id/w1" 
+        android:layout_width="0dp" 
+        android:layout_height="0dp" 
+        android:layout_centerHorizontal="true" 
+        android:layout_marginEnd="25dp" 
+        app:layout_constraintEnd_toEndOf="parent" 
+        app:layout_constraintStart_toStartOf="parent" 
+        app:layout_constraintTop_toTopOf="parent" 
+        app:layout_constraintBottom_toBottomOf="parent" /> 
+ 
+</androidx.constraintlayout.widget.ConstraintLayout> 
+
+
+MainActivity.java: 
+
+package com.example.ex8; 
+ 
+import android.content.Intent; 
+import android.os.Bundle; 
+import android.view.View; 
+import android.widget.Button; 
+import android.widget.EditText; 
+ 
+import androidx.activity.EdgeToEdge; 
+import androidx.appcompat.app.AppCompatActivity; 
+import androidx.core.graphics.Insets; 
+import androidx.core.view.ViewCompat; 
+import androidx.core.view.WindowInsetsCompat; 
+ 
+public class MainActivity extends AppCompatActivity { 
+    Button b1; 
+    EditText e1,e2; 
+    @Override 
+    protected void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.activity_main); 
+        b1=(Button)findViewById( R.id.b1 ); 
+        e1=(EditText)findViewById( R.id.e1 ); 
+        e2=(EditText)findViewById( R.id.e2 ); 
+        b1.setOnClickListener( new View.OnClickListener() 
+        { @Override 
+        public void onClick(View v) { 
+            Intent i=new Intent( getApplicationContext(),MainActivity2.class ); 
+            i.putExtra( "e1",e1.getText().toString() ); i.putExtra( 
+                    "e2",e2.getText().toString() ); 
+            startActivity( i ); 
+        } 
+        } ); 
+    } 
+} 
+
+
+MainActivity2.java: 
+
+package com.example.ex8; 
+ 
+import android.os.Bundle; 
+import android.webkit.WebView; 
+import android.webkit.WebViewClient; 
+ 
+import androidx.activity.EdgeToEdge; 
+import androidx.appcompat.app.AppCompatActivity; 
+import androidx.core.graphics.Insets; 
+import androidx.core.view.ViewCompat; 
+import androidx.core.view.WindowInsetsCompat; 
+ 
+public class MainActivity2 extends AppCompatActivity { 
+    String lat,long1; 
+    WebView w1; 
+    @Override 
+    protected void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.activity_main2); 
+        Bundle 
+                b=getIntent().getExtras(); 
+        lat=b.getString( "e1" ); 
+        long1=b.getString( "e2" ); 
+        w1=(WebView)findViewById( R.id.w1 ); 
+        w1.setWebViewClient( new WebViewClient() ); 
+        w1.getSettings().setJavaScriptEnabled( true ); 
+        String url="https://www.google.com/maps/search/?api=1&query="+lat+","+long1; 
+        w1.loadUrl(url); 
+    } 
+} 
+ 
+ 
+AndroidManifest.xml: 
+
+<?xml version="1.0" encoding="utf-8"?> 
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:tools="http://schemas.android.com/tools"> 
+ 
+    <!-- Permissions for accessing the internet and location --> 
+    <uses-permission android:name="android.permission.INTERNET" /> 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" 
+/> 
+ 
+ 
+    <application 
+        android:allowBackup="true" 
+        android:dataExtractionRules="@xml/data_extraction_rules" 
+        android:fullBackupContent="@xml/backup_rules" 
+        android:icon="@mipmap/ic_launcher" 
+        android:label="@string/app_name" 
+        android:roundIcon="@mipmap/ic_launcher_round" 
+        android:supportsRtl="true" 
+        android:theme="@style/Theme.Ex8" 
+        tools:targetApi="31"> 
+        <activity 
+            android:name=".MainActivity" 
+            android:exported="true"> 
+            <intent-filter> 
+                <action android:name="android.intent.action.MAIN" /> 
+                <category android:name="android.intent.category.LAUNCHER" /> 
+            </intent-filter> 
+        </activity> 
+ 
+        <!-- Second Activity (MainActivity2) --> 
+        <activity 
+            android:name=".MainActivity2" 
+            android:exported="true"> 
+            <!-- No intent filter needed, this activity is launched from MainActivity --> 
+        </activity> 
+ 
+ 
+    </application> 
+ 
+</manifest> 
+ 
+ 
+OUTPUT: 
+ 
+  
+ 
+                                                 
