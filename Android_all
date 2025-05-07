@@ -1,0 +1,862 @@
+1.GUI COMPONENTS
+MainActivity.java:
+package com.example.gui;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    float size = 30;
+    int[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.YELLOW, Color.MAGENTA};
+    int index = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        TextView t = findViewById(R.id.textView1);
+        findViewById(R.id.btnSize).setOnClickListener(v -> {
+            t.setTextSize(size);
+            size = size >= 50 ? 30 : size + 5;
+        });
+        findViewById(R.id.btnColor).setOnClickListener(v -> {
+            t.setTextColor(colors[index]);
+            index = (index + 1) % colors.length;
+        });
+    }
+}
+
+2.LAYOUT MANAGER
+MainActivity.java:
+package com.example.ex2;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    Button redButton, greenButton, blueButton;
+    ListView listView;
+    Spinner spinner;
+    String[] colors = {"Red", "Green", "Blue"};
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        redButton = findViewById(R.id.redButton);
+        greenButton = findViewById(R.id.greenButton);
+        blueButton = findViewById(R.id.blueButton);
+        listView = findViewById(R.id.listView);
+        spinner = findViewById(R.id.spinner);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, colors);
+        listView.setAdapter(adapter);
+        spinner.setAdapter(adapter);
+
+        View.OnClickListener colorChangeListener = v -> {
+            int color = Color.BLACK;
+            if (v == redButton) color = Color.RED;
+            else if (v == greenButton) color = Color.GREEN;
+            else if (v == blueButton) color = Color.BLUE;
+            ((Button) v).setTextColor(color);
+        };
+
+        redButton.setOnClickListener(colorChangeListener);
+        greenButton.setOnClickListener(colorChangeListener);
+        blueButton.setOnClickListener(colorChangeListener);
+
+        listView.setOnItemClickListener((parent, view, position, id) ->
+                Toast.makeText(this, "List: " + colors[position], Toast.LENGTH_SHORT).show());
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(MainActivity.this, "Spinner: " + colors[position], Toast.LENGTH_SHORT).show();
+            }
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }}
+
+
+
+
+3.GRAPHICAL PRIMITIVE
+MainActivity.java:
+package com.example.ex3;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.widget.ImageView;
+import android.graphics.drawable.BitmapDrawable;
+
+public class MainActivity extends AppCompatActivity {
+    ImageView imageView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        imageView = findViewById(R.id.imageView);
+
+        Bitmap bitmap = Bitmap.createBitmap(720, 1280, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        paint.setColor(Color.BLUE);
+        paint.setTextSize(50);
+
+        canvas.drawText("Rectangle", 420, 150, paint);
+        canvas.drawRect(400, 200, 650, 700, paint);
+
+        canvas.drawText("Circle", 120, 150, paint);
+        canvas.drawCircle(200, 350, 150, paint);
+
+        canvas.drawText("Square", 120, 800, paint);
+        canvas.drawRect(50, 850, 350, 1150, paint);
+
+        canvas.drawText("Line", 480, 800, paint);
+        canvas.drawLine(520, 850, 520, 1150, paint);
+
+        imageView.setBackground(new BitmapDrawable(getResources(), bitmap));
+    }
+}
+
+
+
+4.ANIMATION USING MULTITHREADING
+MainActivity.java:
+package com.example.ex4;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+
+public class MainActivity extends AppCompatActivity {
+    ImageView i;
+    Button b1, b2;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        i = findViewById(R.id.i);
+        b1 = findViewById(R.id.b1);
+        b2 = findViewById(R.id.b2);
+
+        b1.setOnClickListener(v -> new Thread(() -> i.post(() -> i.setImageResource(R.drawable.rose))).start());
+        b2.setOnClickListener(v -> new Thread(() -> i.post(() -> i.setImageResource(R.drawable.sunfl))).start());
+    }
+}
+
+5.PERSISTENT DATA STORAGE
+MainActivity.java:
+package com.example.ex5;
+
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText e1, e2, e3;
+    Button b1;
+    SQLiteDatabase db;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        e1 = findViewById(R.id.e1);
+        e2 = findViewById(R.id.e2);
+        e3 = findViewById(R.id.e3);
+        b1 = findViewById(R.id.b1);
+
+        db = openOrCreateDatabase("Mydb", MODE_PRIVATE, null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS student (firstName VARCHAR, lastName VARCHAR, mobile VARCHAR);");
+
+        b1.setOnClickListener(v -> {
+            String f1 = e1.getText().toString();
+            String l1 = e2.getText().toString();
+            String m1 = e3.getText().toString();
+
+            if (f1.isEmpty() || l1.isEmpty() || m1.isEmpty()) {
+                Toast.makeText(MainActivity.this, "Fill all fields!", Toast.LENGTH_SHORT).show();
+            } else {
+                ContentValues values = new ContentValues();
+                values.put("firstName", f1);
+                values.put("lastName", l1);
+                values.put("mobile", m1);
+                db.insert("student", null, values);
+                Toast.makeText(MainActivity.this, "Inserted", Toast.LENGTH_SHORT).show();
+                e1.setText(""); e2.setText(""); e3.setText("");
+            }
+        });
+    }
+}
+
+MainActivity2.java: (DISPLAY DATA)
+package com.example.ex5;
+
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity2 extends AppCompatActivity {
+
+    SQLiteDatabase db;
+    Cursor c;
+    EditText e4, e5, e6;
+    Button b4, b5;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main2);
+
+        db = openOrCreateDatabase("Mydb", MODE_PRIVATE, null);
+        c = db.rawQuery("SELECT * FROM student", null);
+
+        e4 = findViewById(R.id.e4);
+        e5 = findViewById(R.id.e5);
+        e6 = findViewById(R.id.e6);
+        b4 = findViewById(R.id.b4);
+        b5 = findViewById(R.id.b5);
+
+        if (c.moveToFirst()) {
+            e4.setText(c.getString(0));
+            e5.setText(c.getString(1));
+            e6.setText(c.getString(2));
+        }
+
+        b4.setOnClickListener(v -> {
+            if (c.moveToPrevious()) {
+                e4.setText(c.getString(0));
+                e5.setText(c.getString(1));
+                e6.setText(c.getString(2));
+            }
+        });
+
+        b5.setOnClickListener(v -> {
+            if (c.moveToNext()) {
+                e4.setText(c.getString(0));
+                e5.setText(c.getString(1));
+                e6.setText(c.getString(2));
+            }
+        });
+    }
+}
+
+6.SD CARD MANAGER
+MainActivity.java:
+package com.example.sdcard;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.os.Environment;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.*;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText editText;
+    TextView textView;
+    final int REQUEST_CODE = 100;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        editText = findViewById(R.id.editText);
+        textView = findViewById(R.id.textView);
+        Button writeButton = findViewById(R.id.writeButton);
+        Button readButton = findViewById(R.id.readButton);
+
+        if (!hasPermissions())
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+
+        writeButton.setOnClickListener(v -> writeToFile(editText.getText().toString()));
+        readButton.setOnClickListener(v -> readFromFile());
+    }
+
+    private boolean hasPermissions() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void writeToFile(String data) {
+        if (isStorageAvailable()) {
+            File file = new File(getExternalFilesDir(null), "myfile.txt");
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(data.getBytes());
+                textView.setText("Data Written Successfully");
+            } catch (IOException e) {
+                textView.setText("Write Failed");
+            }
+        } else {
+            textView.setText("Storage Not Available");
+        }
+    }
+
+    private void readFromFile() {
+        if (isStorageAvailable()) {
+            File file = new File(getExternalFilesDir(null), "myfile.txt");
+            if (file.exists()) {
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    byte[] data = new byte[(int) file.length()];
+                    fis.read(data);
+                    textView.setText(new String(data));
+                } catch (IOException e) {
+                    textView.setText("Read Failed");
+                }
+            } else {
+                textView.setText("File Not Found");
+            }
+        } else {
+            textView.setText("Storage Not Available");
+        }
+    }
+
+    private boolean isStorageAvailable() {
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+    }
+}
+
+
+7.NOTIFICATION MANAGER
+MainActivity.java:
+package com.example.notification;
+
+import android.app.*;
+import android.content.*;
+import android.os.*;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
+public class MainActivity extends AppCompatActivity {
+    private static final String CHANNEL_ID = "my_channel";
+    Button b;
+    EditText e;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        b = findViewById(R.id.b);
+        e = findViewById(R.id.e);
+        createNotificationChannel();
+        b.setOnClickListener(v -> sendNotification());
+    }
+
+    private void sendNotification() {
+        String msg = e.getText().toString();
+        Intent i = new Intent(this, MainActivity2.class);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle("New Message")
+            .setContentText(msg)
+            .setContentIntent(pi)
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH);
+        NotificationManagerCompat.from(this).notify(1, builder.build());
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_HIGH);
+            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
+        }
+    }
+}
+
+MainActivity2.java:
+package com.example.notification;
+
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity2 extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main2);
+    }
+}
+
+
+
+8.GPS LOCATION TRACKING
+MainActivity.java:
+package com.example.ex8;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    Button b1;
+    EditText e1, e2;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        b1 = findViewById(R.id.b1);
+        e1 = findViewById(R.id.e1);
+        e2 = findViewById(R.id.e2);
+
+        b1.setOnClickListener(v -> {
+            Intent i = new Intent(this, MainActivity2.class);
+            i.putExtra("e1", e1.getText().toString());
+            i.putExtra("e2", e2.getText().toString());
+            startActivity(i);
+        });
+    }
+}
+
+MainActivity2.java:
+package com.example.ex8;
+
+import android.os.Bundle;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity2 extends AppCompatActivity {
+    WebView w1;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main2);
+
+        w1 = findViewById(R.id.w1);
+        w1.setWebViewClient(new WebViewClient());
+        w1.getSettings().setJavaScriptEnabled(true);
+
+        String lat = getIntent().getStringExtra("e1");
+        String lon = getIntent().getStringExtra("e2");
+        w1.loadUrl("https://www.google.com/maps/search/?api=1&query=" + lat + "," + lon);
+    }
+}
+
+AndroidManifest.xml:
+uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+
+9.APPLICATION TO SEND AN EMAIL
+MainActivity.java:
+package com.example.ex9;
+import android.content.Intent; import android.os.Bundle;
+import android.view.View; import android.widget.*;
+import androidx.activity.result.*; import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    EditText from, to, sub, msg; TextView status;
+    ActivityResultLauncher<Intent> launcher = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(), r -> {
+            status.setText("Sent ✅"); status.setVisibility(View.VISIBLE);
+        });
+
+    protected void onCreate(Bundle b) {
+        super.onCreate(b); setContentView(R.layout.activity_main);
+        from = findViewById(R.id.from); to = findViewById(R.id.to);
+        sub = findViewById(R.id.sub); msg = findViewById(R.id.msg);
+        status = findViewById(R.id.status);
+        findViewById(R.id.send).setOnClickListener(v -> sendEmail());
+    }
+
+    void sendEmail() {
+        String f = from.getText().toString().trim(), t = to.getText().toString().trim(),
+               s = sub.getText().toString().trim(), m = msg.getText().toString().trim();
+        if (f.isEmpty() || t.isEmpty() || s.isEmpty() || m.isEmpty()) {
+            Toast.makeText(this, "Fill all fields", Toast.LENGTH_SHORT).show(); return;
+        }
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("message/rfc822");
+        i.putExtra(Intent.EXTRA_EMAIL, new String[]{t});
+        i.putExtra(Intent.EXTRA_SUBJECT, s);
+        i.putExtra(Intent.EXTRA_TEXT, "From: " + f + "\n\n" + m);
+        try { launcher.launch(Intent.createChooser(i, "Choose Email App")); }
+        catch (Exception e) { Toast.makeText(this, "No Email app", Toast.LENGTH_SHORT).show(); }
+    }
+}
+
+AndroidManifest.xml:
+<uses-permission android:name="android.permission.INTERNET"/>
+
+
+10. REGIONAL LANGUAGE SUPPORT
+MainActivity.java:
+package com.example.ex10; 
+import androidx.appcompat.app.AppCompatActivity; 
+ 
+import androidx.appcompat.app.AlertDialog; 
+ 
+import android.app.Activity; 
+ 
+import android.content.DialogInterface; 
+import android.content.SharedPreferences; 
+import android.content.res.Configuration; 
+import android.os.Bundle; 
+import android.view.View; 
+import android.widget.Button; 
+ 
+import java.util.Locale; 
+ 
+public class MainActivity extends AppCompatActivity { 
+    Button b2; 
+    @Override 
+    protected void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.activity_main); 
+        b2 = findViewById(R.id.button2); 
+ 
+        loadLocale(); // Load saved language 
+ 
+        b2.setOnClickListener(new View.OnClickListener() { 
+            @Override 
+            public void onClick(View v) { 
+                showChangeLanguage(); 
+            } 
+        }); 
+    } 
+    private void showChangeLanguage() { 
+        final String[] listItems = {"English", "Arabic", "Tamil", "Telugu"}; 
+ 
+        AlertDialog.Builder m = new AlertDialog.Builder(MainActivity.this); 
+        m.setTitle("Choose Your Language"); 
+ 
+        m.setSingleChoiceItems(listItems, -1, new DialogInterface.OnClickListener() { 
+            @Override 
+            public void onClick(DialogInterface dialog, int i) { 
+                String selectedLanguage; 
+                if (i == 0) { 
+                    selectedLanguage = "en"; // English 
+                } else if (i == 1) { 
+                    selectedLanguage = "ar"; // Arabic 
+                } else if (i == 2) { 
+                    selectedLanguage = "ta"; // Tamil 
+                } else if (i == 3) { 
+                    selectedLanguage = "te"; // Telugu 
+                } else { 
+ 
+                    return; 
+                } 
+ 
+                setLocale(selectedLanguage); 
+ 
+                recreate(); 
+                dialog.dismiss(); 
+            } 
+        }); 
+ 
+        AlertDialog mDialog = m.create(); 
+        mDialog.show(); 
+    } 
+ 
+ 
+    private void setLocale(String lang) { 
+        Locale locale = new Locale(lang); 
+        Locale.setDefault(locale); 
+ 
+        Configuration config = new Configuration(); 
+        config.locale = locale; 
+ 
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics()); 
+ 
+        SharedPreferences.Editor editor = getSharedPreferences("settings", 
+MODE_PRIVATE).edit(); 
+        editor.putString("My Language", lang); 
+        editor.apply(); 
+ 
+ 
+    } 
+ 
+    private void loadLocale() { 
+        SharedPreferences preferences = getSharedPreferences("settings", 
+Activity.MODE_PRIVATE); 
+        String lang = preferences.getString("My Language", ""); 
+        setLocale(lang); 
+    } 
+ 
+} 
+
+values\strings.xml: 
+<?xml version="1.0" encoding="utf-8"?> 
+<resources> 
+ 
+    <string name="app_name">ex10</string> 
+    <string name="regionallanguage">Regional Language</string> 
+ 
+    <string name="username">User Name</string> 
+ 
+    <string  name="password">Password</string> 
+ 
+    <string name="login"> Login </string> 
+    <string name="changelanguage">Change Language</string> 
+    <string  name="hint1">Enter your name</string> 
+    <string  name="hint2">Enter your password</string> 
+</resources> 
+ 
+values-ta\strings.xml: 
+<?xml version="1.0" encoding="utf-8"?> 
+<resources> 
+    <string name="app_name">ex10</string> 
+    <string name="regionallanguage">பிராந்திய ம ாழி</string> 
+    <string name="username">பயனர் மபயர்</string> 
+    <string name="password">கடவுச்மசால்</string> 
+    <string name="login">உள்நுழைய</string> 
+    <string name="changelanguage">ம ாழி  ாற்ற ்</string> 
+    <string name="hint1">உங்கள் மபயழர உள்ளிடவு ்</string> 
+    <string name="hint2">உங்கள் கடவுச்மசால்ழல உள்ளிடவு ்</string> 
+</resources> 
+ 
+values-te\strings.xml: 
+<?xml version="1.0" encoding="utf-8"?> 
+<resources> 
+    <string name="app_name">ex10</string> 
+    <string name="regionallanguage">ప్రాంతీయ భాష</string> 
+    <string name="username">వినియోగదారు పేరు</string> 
+    <string name="password">రస్ర్డ</string> 
+ 
+    <string name="login">ప్రవేశాంచాండి</string> 
+ 
+    <string name="changelanguage">భాష మారుు </string> 
+    <string name="hint1">మీ పేరు రాయుము</string> 
+    <string name="hint2">మీ రస్ర్డ ని నమోదుచేయాండి</string> 
+ 
+</resources> 
+ 
+values-ar\strings.xml: 
+<?xml version="1.0" encoding="utf-8"?> 
+<resources> 
+    <string name="app_name">ex10</string> 
+    <string name="regionallanguage">ةغ ل ةي لحم</string> 
+    <string name="username">مسا مدخت سملا</string> 
+    <string name="password">ةمل ك رورملا</string> 
+    <string name="login">لي جس ت لوخد لا</string> 
+    <string name="changelanguage">ري ي غ ت ةغل لا</string> 
+    <string name="hint1">لخدأ كمسأ</string> 
+    <string name="hint2">لخدا كمقر يرس لا</string> 
+</resources> 
+
+11.CLOUD STORAGE
+MainActivity.java:
+STEP 1: Create a New Android Project
+
+1. Open Android Studio
+2. Click on "New Project"
+3. Choose "Empty Activity"
+4. Name your app: CloudStorageApp
+5. Language: Java
+6. Minimum SDK: API 21 or higher
+7. Click Finish
+
+STEP 2: Connect to Firebase
+
+1. Go to Tools > Firebase
+2. In the Assistant panel, choose Storage > Upload and download files with Cloud Storage
+3. Click "Connect to Firebase"
+4. Login with Google and choose to create a new Firebase project or select existing.
+5. Click "Add Cloud Storage SDK to your app"
+
+STEP 3: Update Gradle Files
+
+Check if this line is added to your build.gradle (app):
+implementation 'com.google.firebase:firebase-storage:20.3.0'
+
+Also make sure this line is in build.gradle (project):
+classpath 'com.google.gms:google-services:4.4.0'
+
+At the bottom of app-level build.gradle, add:
+apply plugin: 'com.google.gms.google-services'
+
+Then click "Sync Now".
+
+STEP 4: Add Internet Permission
+
+In AndroidManifest.xml, add:
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+STEP 5: Add Layout Code
+
+In res/layout/activity_main.xml:
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/selectBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Image"/>
+
+    <Button
+        android:id="@+id/uploadBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload Image"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>
+
+STEP 6: Java Code to Upload Image
+
+In MainActivity.java:
+
+package com.example.cloudstorageapp;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+public class MainActivity extends AppCompatActivity {
+
+    Button selectBtn, uploadBtn;
+    Uri imageUri;
+    FirebaseStorage storage;
+    StorageReference storageRef;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        selectBtn = findViewById(R.id.selectBtn);
+        uploadBtn = findViewById(R.id.uploadBtn);
+
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+
+        selectBtn.setOnClickListener(v -> selectImage());
+        uploadBtn.setOnClickListener(v -> uploadImage());
+    }
+
+    private void selectImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, 101);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 101 && resultCode == RESULT_OK && data != null) {
+            imageUri = data.getData();
+            Toast.makeText(this, "Image Selected", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void uploadImage() {
+        if (imageUri != null) {
+            StorageReference imgRef = storageRef.child("images/" + System.currentTimeMillis() + ".jpg");
+            UploadTask uploadTask = imgRef.putFile(imageUri);
+
+            uploadTask.addOnSuccessListener(taskSnapshot -> 
+                Toast.makeText(MainActivity.this, "Upload Successful", Toast.LENGTH_SHORT).show()
+            ).addOnFailureListener(e -> 
+                Toast.makeText(MainActivity.this, "Upload Failed", Toast.LENGTH_SHORT).show()
+            );
+        } else {
+            Toast.makeText(this, "Select an image first", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+
+STEP 7: Launch and Test Your App
+
+1. Run the app on emulator or real device.
+2. Click "Select Image" → choose an image.
+3. Click "Upload Image" → it gets uploaded to Firebase.
+
+STEP 8: View Uploaded Files
+
+Go to Firebase Console
+Select your project → Storage
+
+You’ll see your uploaded images under /images/ folder.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OUTPUT:
+
+UI:
+
+
+Firebase Console output
+
+
+
+
+
+
+
