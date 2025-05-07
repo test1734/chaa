@@ -1,0 +1,156 @@
+11.CLOUD STORAGE
+MainActivity.java:
+STEP 1: Create a New Android Project
+
+1. Open Android Studio
+2. Click on "New Project"
+3. Choose "Empty Activity"
+4. Name your app: CloudStorageApp
+5. Language: Java
+6. Minimum SDK: API 21 or higher
+7. Click Finish
+
+STEP 2: Connect to Firebase
+
+1. Go to Tools > Firebase
+2. In the Assistant panel, choose Storage > Upload and download files with Cloud Storage
+3. Click "Connect to Firebase"
+4. Login with Google and choose to create a new Firebase project or select existing.
+5. Click "Add Cloud Storage SDK to your app"
+
+STEP 3: Update Gradle Files
+
+Check if this line is added to your build.gradle (app):
+implementation 'com.google.firebase:firebase-storage:20.3.0'
+
+Also make sure this line is in build.gradle (project):
+classpath 'com.google.gms:google-services:4.4.0'
+
+At the bottom of app-level build.gradle, add:
+apply plugin: 'com.google.gms.google-services'
+
+Then click "Sync Now".
+
+STEP 4: Add Internet Permission
+
+In AndroidManifest.xml, add:
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+
+
+STEP 5: Add Layout Code
+
+In res/layout/activity_main.xml:
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/selectBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Image"/>
+
+    <Button
+        android:id="@+id/uploadBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload Image"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>
+
+
+
+STEP 6: Java Code to Upload Image
+
+In MainActivity.java:
+
+package com.example.cloudstorageapp;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+public class MainActivity extends AppCompatActivity {
+
+    Button selectBtn, uploadBtn;
+    Uri imageUri;
+    FirebaseStorage storage;
+    StorageReference storageRef;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        selectBtn = findViewById(R.id.selectBtn);
+        uploadBtn = findViewById(R.id.uploadBtn);
+
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+
+        selectBtn.setOnClickListener(v -> selectImage());
+        uploadBtn.setOnClickListener(v -> uploadImage());
+    }
+
+    private void selectImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, 101);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 101 && resultCode == RESULT_OK && data != null) {
+            imageUri = data.getData();
+            Toast.makeText(this, "Image Selected", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void uploadImage() {
+        if (imageUri != null) {
+            StorageReference imgRef = storageRef.child("images/" + System.currentTimeMillis() + ".jpg");
+            UploadTask uploadTask = imgRef.putFile(imageUri);
+
+            uploadTask.addOnSuccessListener(taskSnapshot -> 
+                Toast.makeText(MainActivity.this, "Upload Successful", Toast.LENGTH_SHORT).show()
+            ).addOnFailureListener(e -> 
+                Toast.makeText(MainActivity.this, "Upload Failed", Toast.LENGTH_SHORT).show()
+            );
+        } else {
+            Toast.makeText(this, "Select an image first", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+
+STEP 7: Launch and Test Your App
+
+1. Run the app on emulator or real device.
+2. Click "Select Image" → choose an image.
+3. Click "Upload Image" → it gets uploaded to Firebase.
+
+STEP 8: View Uploaded Files
+
+Go to Firebase Console
+Select your project → Storage
+
+You’ll see your uploaded images under /images/ folder.
